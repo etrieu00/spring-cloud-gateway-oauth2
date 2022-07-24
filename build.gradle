@@ -1,0 +1,38 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id "org.openapi.generator" version '6.0.0'
+    id 'java'
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+ext {
+    set('springCloudVersion', "2021.0.3")
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'org.openapi.generator'
+
+    group = 'com.etrieu00'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '17'
+
+    sourceCompatibility = "17"
+    targetCompatibility = JavaVersion.VERSION_17
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+}
+
+

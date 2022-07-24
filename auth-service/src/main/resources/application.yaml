@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: auth-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/demo_db?currentSchema=demo_gateway
+    username: postgres
+    password: password
+server:
+  port: 8081

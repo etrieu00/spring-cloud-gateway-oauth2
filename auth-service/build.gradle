@@ -1,0 +1,49 @@
+dependencies {
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.23'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+openApiGenerate {
+    generatorName = 'spring'
+    inputSpec = "$projectDir/src/main/resources/openapi/auth.yaml"
+    outputDir = "$buildDir/generated"
+    packageName = 'com.etrieu00.auth'
+    modelPackage = 'com.etrieu00.auth.rest.model'
+    generateApiTests = false
+    generateApiDocumentation = true
+    configOptions = [
+            interfaceOnly        : 'true',
+            skipDefaultInterface : 'true',
+            annotationLibrary    : 'none',
+            documentationProvider: 'none',
+            useSwaggerUI         : 'false',
+            openApiNullable      : 'false',
+            reactive             : 'true',
+            useBeanValidation    : 'false'
+    ]
+}
+
+tasks.compileJava.dependsOn tasks.openApiGenerate
+
+sourceSets {
+    main {
+        java {
+            srcDir {
+                "$buildDir/generated/src/main/java"
+            }
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

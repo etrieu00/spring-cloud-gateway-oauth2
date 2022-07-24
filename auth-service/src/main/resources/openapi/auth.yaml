@@ -1,0 +1,153 @@
+openapi: 3.0.0
+info:
+  title: Budget Turtle Application
+  description: Authentication for Budget Turtle Application
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Authentication
+    description: Application authentication
+paths:
+  /auth/signup:
+    summary: Account signup
+    post:
+      description: Account signup
+      operationId: userSignUp
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/X-Requester-Id'
+        - $ref: '#/components/parameters/Client-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+  /auth/login:
+    summary: Account login
+    post:
+      description: Account login
+      operationId: userLogin
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/X-Requester-Id'
+        - $ref: '#/components/parameters/Client-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+  /auth/access:
+    summary: Issue a new access token when given a valid refresh token
+    post:
+      description: Issue a new access token when given a valid refresh token
+      operationId: issueAccessToken
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/X-Requester-Id'
+        - $ref: '#/components/parameters/Client-Id'
+        - $ref: '#/components/parameters/Token'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+components:
+  responses:
+    TokenResponse:
+      description: When successful a new token will be issued
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Token'
+  parameters:
+    X-Requester-Id:
+      description: Idempotency key
+      name: X-Requester-Id
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Client-Id:
+      description: Client Application Id
+      name: Client-Id
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Token:
+      description: Access or refresh token
+      name: token
+      in: query
+      required: true
+      schema:
+        type: string
+  schemas:
+    Login:
+      description: Simple login request
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          description: email for the account
+          type: string
+          format: email
+        password:
+          description: password for the account
+          type: string
+          format: password
+    SignUp:
+      description: Simple sign up request
+      type: object
+      required:
+        - username
+        - password
+        - firstname
+        - lastname
+      properties:
+        username:
+          description: email for the account
+          type: string
+          format: email
+        password:
+          description: password for the account
+          type: string
+          format: password
+        firstname:
+          description: first name
+          type: string
+        lastname:
+          description: last name
+          type: string
+    Token:
+      description: Details of a token
+      type: object
+      required:
+        - type
+        - token
+      properties:
+        type:
+          description: token type
+          type: string
+          enum:
+            - REFRESH
+            - ACCESS
+        token:
+          description: refresh or access token
+          type: string
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
